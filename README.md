@@ -45,30 +45,57 @@ The main function exposed by the WebAssembly module is `prerank_rs`:
 pub fn prerank_rs(
     genes: Vec<String>,
     metric: Vec<f64>,
-    gene_sets: Vec<Vec<String>>,
+    gene_sets: JsValue,
     weight: f64,
-    min_size: u32,
-    max_size: u32,
-    num_permutations: u32,
-    random_seed: u32,
-) -> Vec<GseaResult>
+    min_size: usize,
+    max_size: usize,
+    nperm: usize,
+    seed: u64,
+) -> Result<JsValue, JsValue>
 ```
 
 This function takes the following inputs:
 
-- `genes`: A vector of gene names
-- `metric`: A vector of metric values corresponding to the genes
-- `gene_sets`: A vector of vectors, where each inner vector represents a gene set
-- `weight`: The weight parameter for the GSEA algorithm
-- `min_size`: The minimum size of the gene sets to consider
-- `max_size`: The maximum size of the gene sets to consider
-- `num_permutations`: The number of permutations to perform for the GSEA algorithm
-- `random_seed`: A random seed for the permutation generation
+- `genes`: A vector of gene names (as strings)
+- `metric`: A vector of metric values corresponding to the genes (as floating-point numbers)
+- `gene_sets`: A JavaScript object representing gene sets, where keys are set names and values are arrays of gene names
+- `weight`: The weight parameter for the GSEA algorithm (as a floating-point number)
+- `min_size`: The minimum size of the gene sets to consider (as an integer)
+- `max_size`: The maximum size of the gene sets to consider (as an integer)
+- `nperm`: The number of permutations to perform for the GSEA algorithm (as an integer)
+- `seed`: A random seed for the permutation generation (as an unsigned 64-bit integer)
 
-The function returns a vector of `GseaResult` structs, which contain the following fields:
+The function returns a `Result` containing a `JsValue` on success, which represents an array of summary objects with the following structure:
 
-- `gene_set`: The name of the gene set
+```javascript
+[
+  {
+    term: string,
+    es: number,
+    nes: number,
+    pval: number,
+    fwerp: number,
+    fdr: number,
+    run_es: number[],
+    hits: number[],
+    esnull: number[],
+    index: number | null
+  },
+  // ... more summary objects
+]
+```
+
+Each summary object in the array contains:
+
+- `term`: The name of the gene set
 - `es`: The enrichment score for the gene set
 - `nes`: The normalized enrichment score for the gene set
-- `p_val`: The p-value for the gene set
+- `pval`: The p-value for the gene set
+- `fwerp`: The family-wise error rate p-value for the gene set
 - `fdr`: The false discovery rate for the gene set
+- `run_es`: An array of running enrichment scores
+- `hits`: An array of indices representing the positions of hits in the ranked list
+- `esnull`: An array of null enrichment scores
+- `index`: An optional index value (may be null)
+
+To use this function in JavaScript, you'll need to use a Web Worker to run the WebAssembly module. See `gsea-worker.js` and `gsea-app.js` for implementation details.

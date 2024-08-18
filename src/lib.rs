@@ -25,5 +25,5 @@ pub fn prerank_rs(
     }
     let mut gsea = GSEAResult::new(weight, max_size, min_size, nperm, seed);
     gsea.prerank(&genes, &metric, &gmt);
-    serde_wasm_bindgen::to_value(&gsea).map_err(|e| JsValue::from_str(&e.to_string()))
+    serde_wasm_bindgen::to_value(&gsea.summaries).map_err(|e| JsValue::from_str(&e.to_string()))
 }

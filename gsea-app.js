@@ -52,17 +52,9 @@ function runGSEA(event) {
     document.getElementById('results').innerHTML = 'Calculating...';
 }
 
-function displayResults(result) {
-    console.log('Result received:', result);
+function displayResults(summaries) {
     const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = '<h2>Results:</h2>';
-
-    if (!result || typeof result !== 'object') {
-        displayError('Invalid result structure');
-        return;
-    }
-
-    const summaries = result.summaries;
 
     if (!Array.isArray(summaries)) {
         displayError('Invalid summaries structure');
