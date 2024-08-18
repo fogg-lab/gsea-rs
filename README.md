@@ -1,4 +1,4 @@
-# gsea_rs
+# gsea-rs
 
 WebAssembly-ready Rust implementation of preranked Gene Set Enrichment Analysis (GSEA) distilled from [GSEApy](https://github.com/zqfang/GSEApy).
 
@@ -12,8 +12,8 @@ WebAssembly-ready Rust implementation of preranked Gene Set Enrichment Analysis 
 
 1. Clone repo:
 ```
-git clone https://github.com/wigginno/gsea_rs.git
-cd gsea_rs
+git clone https://github.com/wigginno/gsea-rs.git
+cd gsea-rs
 ```
 
 2. Build the WebAssembly module:
