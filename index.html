@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAssembly GSEA</title>
+    <script src="gsea-app.js" defer></script>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+        form { margin-bottom: 20px; }
+        label { display: block; margin-top: 10px; }
+        input, textarea { width: 100%; padding: 5px; }
+        button { margin-top: 10px; padding: 10px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>WebAssembly GSEA</h1>
+    <form id="gsea-form">
+        <label for="genes">Genes (comma-separated):</label>
+        <input type="text" id="genes" value="A,B,C,D,E,F,G,H,I,J" required>
+        
+        <label for="metric">Metric (comma-separated):</label>
+        <input type="text" id="metric" value="1.0,0.8,0.6,0.4,0.2,-0.2,-0.4,-0.6,-0.8,-1.0" required>
+
+        <label for="gene-sets">Gene Sets (JSON format):</label>
+        <textarea id="gene-sets" required rows="5">
+{
+    "Set1": ["A", "C", "E"],
+    "Set2": ["B", "D", "F"],
+    "Set3": ["G", "H", "I"]
+}</textarea>
+
+        <label for="weight">Weight:</label>
+        <input type="number" id="weight" value="1.0" step="0.1" required>
+
+        <label for="min-size">Min Size:</label>
+        <input type="number" id="min-size" value="1" required>
+
+        <label for="max-size">Max Size:</label>
+        <input type="number" id="max-size" value="10" required>
+        
+        <label for="nperm">Number of Permutations:</label>
+        <input type="number" id="nperm" value="1000" required>
+        
+        <label for="seed">Random Seed:</label>
+        <input type="number" id="seed" value="123" required>
+        
+        <button type="submit" id="run-button" disabled>Run GSEA</button>
+    </form>
+    <div id="results"></div>
+</body>
+</html>
