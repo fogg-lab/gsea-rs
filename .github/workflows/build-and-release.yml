@@ -22,23 +22,44 @@ jobs:
     - name: Install wasm-pack
       run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-    - name: Build WebAssembly
+    - name: Build
       run: wasm-pack build --target web
 
-    - name: Get Release
-      id: get_release
-      uses: bruceadams/get-release@v1.3.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Get or create release
+      id: get_or_create_release
+      uses: actions/github-script@v6
       with:
-        tag_name: latest
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          try {
+            const release = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: 'latest'
+            });
+            return release.data;
+          } catch (error) {
+            if (error.status === 404) {
+              const newRelease = await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: 'latest',
+                name: 'Latest Release',
+                body: 'This is the latest release of the WebAssembly module.',
+                draft: false,
+                prerelease: false
+              });
+              return newRelease.data;
+            }
+            throw error;
+          }
 
     - name: Upload WebAssembly Module
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        upload_url: ${{ fromJson(steps.get_or_create_release.outputs.result).upload_url }}
         asset_path: ./pkg/gsea_rs_bg.wasm
         asset_name: gsea_rs_bg.wasm
         asset_content_type: application/wasm
@@ -48,7 +69,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        upload_url: ${{ fromJson(steps.get_or_create_release.outputs.result).upload_url }}
         asset_path: ./pkg/gsea_rs.js
         asset_name: gsea_rs.js
         asset_content_type: application/javascript
