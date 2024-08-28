@@ -25,31 +25,28 @@ jobs:
     - name: Build WebAssembly
       run: wasm-pack build --target web
 
-    - name: Check for existing release
-      id: check_release
-      run: |
-        release_id=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/releases/tags/latest" \
-          | jq -r '.id')
-        echo "::set-output name=release_id::$release_id"
-
     - name: Create or update release
       id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        if [ "${{ steps.check_release.outputs.release_id }}" = "null" ]; then
+        release_id=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/tags/latest" \
+          | jq -r '.id')
+        if [ "$release_id" = "null" ]; then
           response=$(curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{"tag_name": "latest", "name": "Latest Release", "body": "This is the latest release of the WebAssembly module.", "draft": false, "prerelease": false}' \
             "https://api.github.com/repos/${{ github.repository }}/releases")
         else
           response=$(curl -X PATCH \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{"body": "This is the latest release of the WebAssembly module."}' \
-            "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.check_release.outputs.release_id }}")
+            "https://api.github.com/repos/${{ github.repository }}/releases/$release_id")
         fi
-        echo "::set-output name=upload_url::$(echo "$response" | jq -r .upload_url | sed -e 's/{?name,label}//')"
+        echo "upload_url=$(echo "$response" | jq -r .upload_url | sed -e 's/{?name,label}//')" >> $GITHUB_OUTPUT
 
     - name: Upload WebAssembly Module
       uses: actions/upload-release-asset@v1
