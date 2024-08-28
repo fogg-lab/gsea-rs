@@ -1,4 +1,4 @@
-name: Build and Release WebAssembly Module
+name: Build and Update Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-release:
+  build-and-update:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,23 +25,20 @@ jobs:
     - name: Build WebAssembly
       run: wasm-pack build --target web
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
+    - name: Get Release
+      id: get_release
+      uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ github.run_number }}
-        release_name: Release ${{ github.run_number }}
-        draft: false
-        prerelease: false
+        tag_name: latest
 
     - name: Upload WebAssembly Module
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
         asset_path: ./pkg/gsea_rs_bg.wasm
         asset_name: gsea_rs_bg.wasm
         asset_content_type: application/wasm
@@ -51,7 +48,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
         asset_path: ./pkg/gsea_rs.js
         asset_name: gsea_rs.js
         asset_content_type: application/javascript
