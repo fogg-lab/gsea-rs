@@ -35,7 +35,7 @@ function runGSEA(event) {
     const minSize = parseInt(document.getElementById('min-size').value);
     const maxSize = parseInt(document.getElementById('max-size').value);
     const nperm = parseInt(document.getElementById('nperm').value);
-    const seed = parseInt(document.getElementById('seed').value);
+    const seed = document.getElementById('seed').value;
 
     worker.postMessage({
         genes,

@@ -15,7 +15,7 @@ async function init_wasm_in_worker() {
           minSize,
           maxSize,
           nperm,
-          BigInt(seed)
+          seed
         );
         self.postMessage({ status: 'success', result });
       } catch (error) {
