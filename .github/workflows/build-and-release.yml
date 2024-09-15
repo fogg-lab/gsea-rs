@@ -26,7 +26,7 @@ jobs:
       run: wasm-pack build --target web
 
     - name: Compress pkg directory
-      run: tar -czvf pkg.tar.gz pkg
+      run: tar -czvf gsea-rs.tar.gz pkg
 
     - name: Update Release
       uses: softprops/action-gh-release@v1
@@ -34,7 +34,7 @@ jobs:
         tag_name: latest
         name: Latest Release
         files: |
-          pkg.tar.gz
+          gsea-rs.tar.gz
         draft: false
         prerelease: false
       env:
