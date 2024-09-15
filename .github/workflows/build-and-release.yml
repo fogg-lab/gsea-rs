@@ -25,14 +25,16 @@ jobs:
     - name: Build
       run: wasm-pack build --target web
 
+    - name: Compress pkg directory
+      run: tar -czvf pkg.tar.gz pkg
+
     - name: Update Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: latest
         name: Latest Release
         files: |
-          pkg/gsea_rs_bg.wasm
-          pkg/gsea_rs.js
+          pkg.tar.gz
         draft: false
         prerelease: false
       env:
